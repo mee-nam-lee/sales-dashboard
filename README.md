@@ -10,6 +10,11 @@ A professional dashboard for tracking and analyzing Sales Revenue data, featurin
 - **Data Source**: Google Cloud BigQuery
 - **AI Engine**: Google Cloud Gemini Conversational Analytics API (BigQuery Agent)
 
+### Architecture Diagram
+
+<img src="./architecture.png" alt="Architecture Diagram" width="100%" />
+
+
 ---
 
 ## 💻 Local Development
