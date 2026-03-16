@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import GroupDashboard from './components/GroupDashboard';
 import EntityDashboard from './components/EntityDashboard';
 import ChatPopup from './components/ChatPopup';

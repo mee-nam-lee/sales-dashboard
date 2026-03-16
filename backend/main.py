@@ -354,4 +354,11 @@ async def catch_all(full_path: str):
 if __name__ == "__main__":
     import uvicorn
     port = int(os.getenv("PORT", "8080"))
+    
+    print(f"Server starting on port {port}...")
+    if os.path.exists("static"):
+        print("Mode: Unified (API + Static Frontend) - Matches Cloud Run deployment.")
+    else:
+        print("Mode: API-only (Standard Dev) - Use frontend dev server for UI.")
+        
     uvicorn.run(app, host="0.0.0.0", port=port)
