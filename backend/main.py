@@ -25,6 +25,22 @@ app.add_middleware(
 DATA_AGENT_ID = os.getenv("DATA_AGENT_ID")
 BILLING_PROJECT = os.getenv("BILLING_PROJECT")
 LOCATION = os.getenv("LOCATION")
+DASHBOARD_TABS_RAW = os.getenv("DASHBOARD_TABS", "[]")
+
+@app.get("/api/config/tabs")
+async def get_tabs_config():
+    try:
+        # Resolve the JSON string from env
+        # Handle cases where env might wrap it in single quotes
+        tabs_str = DASHBOARD_TABS_RAW.strip()
+        if tabs_str.startswith("'") and tabs_str.endswith("'"):
+            tabs_str = tabs_str[1:-1]
+        
+        tabs_list = json.loads(tabs_str)
+        return tabs_list
+    except Exception as e:
+        print(f"DEBUG: Tabs Config Error: {e}", flush=True)
+        return []
 
 @app.post("/api/chat/conversation/create")
 async def create_conversation(conversation_id: str = Query("lg-sales-revenue")):

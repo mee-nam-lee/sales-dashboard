@@ -2,28 +2,35 @@ import React, { useState } from 'react';
 import GroupDashboard from './components/GroupDashboard';
 import EntityDashboard from './components/EntityDashboard';
 import ChatPopup from './components/ChatPopup';
-import { RefreshCw, MessageSquare } from 'lucide-react';
+import { RefreshCw, MessageSquare, Loader2 } from 'lucide-react';
 import './App.css';
 
-const TABS = [
-  { id: 'group', label: 'LG Group', type: 'group' },
-  { id: 'lge', label: 'LGE', type: 'entity', entityName: 'LG전자' },
-  { id: 'lgair', label: 'LG AIR', type: 'entity', entityName: 'LG경영개발원AI연구원' },
-  { id: 'lguplus', label: 'LG Uplus', type: 'entity', entityName: 'LG유플러스' },
-  { id: 'lgcns', label: 'LG CNS', type: 'entity', entityName: 'LGCNS' },
-  { id: 'lgensol', label: 'LG 엔솔', type: 'entity', entityName: 'LG에너지솔루션' },
-  { id: 'lgchem', label: 'LG 화학', type: 'entity', entityName: 'LG화학' },
-  { id: 'lxpantos', label: 'LX 판토스', type: 'entity', entityName: 'LX판토스' },
-  { id: 'serveone', label: '서브원', type: 'entity', entityName: '서브원' },
-  { id: 'lghh', label: 'LG 생활건강', type: 'entity', entityName: 'LG생활건강' },
-];
-
 const App = () => {
-  const [activeTab, setActiveTab] = useState(() => {
-    const saved = localStorage.getItem('activeTabId');
-    return TABS.find(t => t.id === saved) || TABS[0];
-  });
+  const [tabs, setTabs] = useState([]);
+  const [activeTab, setActiveTab] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [isChatOpen, setIsChatOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await fetch('/api/config/tabs');
+        if (!response.ok) throw new Error('Failed to fetch tabs');
+        const data = await response.json();
+        setTabs(data);
+        
+        // Handle initial active tab
+        const savedId = localStorage.getItem('activeTabId');
+        const initialTab = (data && data.find(t => t.id === savedId)) || (data && data[0]);
+        setActiveTab(initialTab);
+      } catch (err) {
+        console.error('Failed to load dashboard configuration:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchConfig();
+  }, []);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -39,6 +46,25 @@ const App = () => {
       window.location.reload();
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-glass-darker">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="animate-spin text-red-700" size={48} />
+          <p className="text-muted font-medium text-lg">Initializing Dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!tabs || tabs.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-glass-darker">
+        <p className="text-danger font-bold text-xl">Configuration Error: No tabs found.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-container relative">
@@ -76,12 +102,12 @@ const App = () => {
         </div>
 
         <nav className="flex space-x-1 bg-glass-darker p-1 rounded-xl">
-          {TABS.map((tab) => (
+          {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => handleTabChange(tab)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                activeTab.id === tab.id
+                activeTab?.id === tab.id
                   ? 'bg-red-700 text-white shadow-md'
                   : 'text-muted hover:bg-glass hover:text-white'
               }`}
@@ -93,13 +119,13 @@ const App = () => {
       </header>
 
       <main className="p-6">
-        {activeTab.type === 'group' ? (
+        {activeTab?.type === 'group' ? (
           <GroupDashboard />
         ) : (
           <EntityDashboard 
-            key={activeTab.id} 
-            entityName={activeTab.entityName} 
-            displayName={activeTab.label} 
+            key={activeTab?.id} 
+            entityName={activeTab?.entityName} 
+            displayName={activeTab?.label} 
           />
         )}
       </main>
