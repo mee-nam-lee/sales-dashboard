@@ -1,0 +1,32 @@
+# Version Control
+.git
+.gitignore
+
+# Frontend local files
+frontend/node_modules
+frontend/dist
+frontend/.env
+frontend/.env.*
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# Backend local files
+backend/__pycache__
+backend/*.pyc
+backend/.env
+backend/venv
+backend/static
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Documentation
+brain/
+README.md
+dashboard_prd.md
+chat-prd.md
+walkthrough.md
+task.md
+implementation_plan.md

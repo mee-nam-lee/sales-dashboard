@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+google-cloud-bigquery
+pandas
+python-dotenv
+db-dtypes
+google-cloud-geminidataanalytics
